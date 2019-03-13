@@ -1,19 +1,17 @@
 package sample.ui;
 
-import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
-import sample.data.Company;
-import sample.data.IUserData;
-import sample.data.ShoppingChain;
-import sample.ui.model.ChainItem;
+import sample.data.*;
+import sample.model.ChainItem;
+import sample.model.CompanyItem;
+import sample.model.INode;
+import sample.model.Tree;
 
 
-import javax.swing.tree.DefaultTreeModel;
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.Set;
@@ -21,34 +19,23 @@ import java.util.TreeSet;
 
 public class Controller implements Initializable, ListChangeListener {
     @FXML
-    TreeView treeView;
+    TreeView<INode> treeView;
     @FXML
     TabPane tabPane;
 
     @FXML
     Tab companyTab;
 
-    ChainItem chainItem;
-    Set<String> strings = new TreeSet<>();
+    Tree tree = new Tree();
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-
-        chainItem = new ChainItem(null, new ShoppingChain("Vika", "Slavytych"));
-        chainItem.addSon(new Company("ABC", "Vasya", 12));
-        strings.add("мама");
-        TreeItem root = new TreeItem("father");
-        treeView.setRoot(chainItem.getUserDataTreeItem());
-        root.getChildren().add(new TreeItem(strings));
+        treeView.setRoot(tree.createRootItem());
         treeView.getSelectionModel().getSelectedItems().addListener(this::onChanged);
     }
 
     @Override
     public void onChanged(Change c) {
-        TreeItem treeItem = (TreeItem) treeView.getSelectionModel().getSelectedItem();
-        chainItem.addSon(new Company("AB", "Vova", 120));
-        strings.add("byby");
-        System.out.println(treeItem.getValue().toString());
 
     }
 
@@ -73,8 +60,22 @@ public class Controller implements Initializable, ListChangeListener {
     }
 
 
-    public void save(ActionEvent actionEvent) {
-//        System.out.println(treeView.getSelectionModel().getSelectedItem().getValue());
+    public void save(ActionEvent actionEvent){
+        TreeItem<INode> selected = treeView
+                .getSelectionModel()
+                .getSelectedItem();
+        if (selected != null) {
+            switch (treeView.getSelectionModel().getSelectedIndex()) {
+                case  0:tree.addChild(selected,new Company(Math.random()*10 +"fdfdd","ss",10));
+                break;
+                case 1: tree.addChild(selected,new Provider(Math.random()*10 +"fdfdd","ss","vfvffv"));
+                break;
+                case 2: tree.addChild(selected,new Product(Math.random()*10 +"fdfdd",10,500));
+                    break;
+            }
+
+
+        }
     }
 
 }
